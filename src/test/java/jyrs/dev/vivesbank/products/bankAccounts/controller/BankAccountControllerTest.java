@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -41,10 +40,10 @@ import java.util.Optional;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
-@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
+@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "CLIENT"})
 @ExtendWith(MockitoExtension.class)
 class BankAccountControllerTest {
-    private final String myEndpoint = "${api.path:/api}/${api.version:/v1}/accounts";
+    private final String myEndpoint = "/vivesBank/v1/accounts";
 
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired
