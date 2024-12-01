@@ -27,16 +27,16 @@ public class BankAccountMapper {
                 .build();
     }
 
-    public CreditCardResponse toCardDto(CreditCard creditCard){
-        if (creditCard == null) {
+    public CreditCardResponse toCardDto(CreditCard card) {
+        if (card == null) {
             return null;
         }
 
-        return new CreditCardResponse(
-                creditCard.getNumber(),
-                creditCard.getExpirationDate().toString(),
-                creditCard.getCvc()
-        );
+        return CreditCardResponse.builder()
+                .number(card.getNumber())
+                .expirationDate(card.getExpirationDate() != null ? card.getExpirationDate().toString() : null)
+                .cvc(card.getCvc())
+                .build();
     }
 
     public BankAccount toBankAccount(BankAccountRequest bankAccountRequest) {
