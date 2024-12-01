@@ -89,6 +89,7 @@ class BankAccountControllerTest {
                 .build();
 
         client = Client.builder()
+                .id(123L)
                 .dni("11111111A")
                 .nombre("Juan")
                 .user(User.builder()
@@ -132,7 +133,7 @@ class BankAccountControllerTest {
     void findAll() throws Exception {
         var accountList = List.of(bankAccountResponse);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
-        var page = new PageImpl<>(accountList);
+        var page = new PageImpl<BankAccountResponse>(accountList);
 
         when(accountService.findAllBankAccounts(Optional.empty(), pageable)).thenReturn(page);
 
