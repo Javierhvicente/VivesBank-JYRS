@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.bsh.commands.dir
+
 plugins {
     java
     id("org.springframework.boot") version "3.3.5"
@@ -34,6 +36,8 @@ dependencies {
 
     // Base de Datos
     implementation("com.h2database:h2")
+    // Postgres
+    implementation("org.postgresql:postgresql:42.7.3")
 
     // Redis
     implementation("redis.clients:jedis:4.4.3")
@@ -49,6 +53,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation ("org.springdoc:springdoc-openapi-ui:1.7.0")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
