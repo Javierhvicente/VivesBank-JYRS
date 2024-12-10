@@ -36,7 +36,6 @@ import java.util.Optional;
  */
 @Service
 @Slf4j
-@CacheConfig(cacheNames = {"Users"})
 public class UsersServiceImpl implements UsersService {
     /**
      * Mapper de usuarios tanto para UserRequest como pra UserResponse
@@ -105,7 +104,6 @@ public class UsersServiceImpl implements UsersService {
      * @return el usuario encontrado en forma de userResponseDto o lanza la excepcion UserNotFound en caso de no econtrarse.
      */
     @Override
-    @Cacheable
     public UserResponseDto getUserById(String id) {
         log.info("Obteniendo user por id: " + id);
         var res = userMapper.toUserResponse(usersRepository.findByGuuid(id));
@@ -136,7 +134,6 @@ public class UsersServiceImpl implements UsersService {
      * @return el nuevo usuario
      */
     @Override
-    @CachePut(key = "#result.id")
     public UserResponseDto saveUser(UserRequestDto user) {
         log.info("Guardando user: " + user);
         var res = userMapper.toUserResponse(usersRepository.save(userMapper.fromUserDto(user)));
@@ -167,7 +164,6 @@ public class UsersServiceImpl implements UsersService {
      * @param id guuid del usuario
      */
     @Override
-    @CacheEvict(value = "usersCache", key = "#id")
     public void deleteUser(String id) {
         log.info("Borrando usuario con id: " + id);
         var result = usersRepository.findByGuuid(id);

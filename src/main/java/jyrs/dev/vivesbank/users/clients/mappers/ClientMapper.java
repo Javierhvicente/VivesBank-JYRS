@@ -1,5 +1,6 @@
 package jyrs.dev.vivesbank.users.clients.mappers;
 
+import jyrs.dev.vivesbank.auth.jwt.JwtService;
 import jyrs.dev.vivesbank.products.bankAccounts.mappers.BankAccountMapper;
 import jyrs.dev.vivesbank.users.clients.dto.AddressDto;
 import jyrs.dev.vivesbank.users.clients.dto.ClientRequestCreate;
@@ -13,9 +14,11 @@ import org.springframework.stereotype.Component;
 public class ClientMapper {
 
     private final BankAccountMapper accountMapper;
+    private final JwtService service;
 
-    public ClientMapper(BankAccountMapper productMapper) {
+    public ClientMapper(BankAccountMapper productMapper, JwtService service) {
         this.accountMapper = productMapper;
+        this.service = service;
     }
 
 
@@ -50,10 +53,14 @@ public class ClientMapper {
     }
 
     public ClientResponse toResponse(Client client) {
+        var jwt = service.generateToken(client.getUser());
         if (client == null) {
             return null;
         }
 
+        System.out.println(client.getUser().getAuthorities());
+        System.out.println(client.getUser().getRoles());
+        System.out.println(jwt);
         return ClientResponse.builder()
                 .dni(client.getDni())
                 .nombre(client.getNombre())
@@ -62,6 +69,7 @@ public class ClientMapper {
                 .email(client.getEmail())
                 .direccion(toAddresDto(client.getDireccion()))
                 .cuentas(accountMapper.toListAccountReesponseDto(client.getCuentas()))
+                .token(jwt)
                 .build();
     }
 

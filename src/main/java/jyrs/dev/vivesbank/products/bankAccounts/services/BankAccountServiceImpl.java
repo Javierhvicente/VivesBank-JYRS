@@ -6,6 +6,8 @@ import jyrs.dev.vivesbank.config.websockets.WebSocketConfig;
 import jyrs.dev.vivesbank.config.websockets.WebSocketHandler;
 import jyrs.dev.vivesbank.products.bankAccounts.dto.BankAccountRequest;
 import jyrs.dev.vivesbank.products.bankAccounts.dto.BankAccountResponse;
+import jyrs.dev.vivesbank.products.bankAccounts.dto.UpdateAccountRequest;
+import jyrs.dev.vivesbank.products.bankAccounts.dto.UpdateAccountResponse;
 import jyrs.dev.vivesbank.products.bankAccounts.exceptions.*;
 import jyrs.dev.vivesbank.products.bankAccounts.mappers.BankAccountMapper;
 import jyrs.dev.vivesbank.products.bankAccounts.models.BankAccount;
@@ -158,7 +160,7 @@ public class BankAccountServiceImpl implements BankAccountService {
      * @throws ClientNotFound Si no se encuentra el cliente
      */
     @Override
-    @CachePut(key = "#result.id")
+    //@CachePut(key = "#result.id")
     public BankAccountResponse saveBankAccount(String id, BankAccountRequest bankAccountRequest) {
         log.info("Guardando cuenta bancaria: " + bankAccountRequest);
 
@@ -179,6 +181,18 @@ public class BankAccountServiceImpl implements BankAccountService {
         return bankAccountMapper.toResponse(savedBankAccount);
     }
 
+    @Override
+    public UpdateAccountResponse updateAccountResponse(String id, UpdateAccountRequest updateAccountRequest,String iban){
+        var client = clientsRepository.getByUser_Guuid(id).orElseThrow(() -> new ClientNotFound(id));
+
+        var account = bankAccountRepository.findByIban(iban).orElseThrow(()->new BankAccountNotFoundByIban(iban));
+
+        account.setBalance(updateAccountRequest.getDinero());
+
+        bankAccountRepository.save(account);
+
+        return UpdateAccountResponse.builder().iban(iban).dinero(updateAccountRequest.getDinero().toString()).build();
+    }
     /**
      * Elimina una cuenta bancaria por su ID.
      *

@@ -31,7 +31,7 @@ public class BankAccountMapper {
                 .accountType(account.getAccountType())
                 .balance(account.getBalance())
                 .creditCard(toCardDto(account.getCreditCard()))
-                .clientId(account.getClient() != null ? account.getClient().getId() : null)
+                .clientId(account.getClient().getId())
                 .build();
     }
 

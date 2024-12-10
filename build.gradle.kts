@@ -47,6 +47,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("com.auth0:java-jwt:4.4.0")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
