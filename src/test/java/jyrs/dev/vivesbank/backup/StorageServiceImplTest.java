@@ -99,7 +99,7 @@ class StorageServiceImplTest {
     Client senderClient = new Client(1L, "Sender", new ArrayList<>());
     Client recipientClient = new Client(2L, "Recipient", new ArrayList<>());
     Movement movement = Movement.builder()
-            .SenderClient(senderClient.getUser().getGuuid())
+            .SenderClient(user.getGuuid())
             .RecipientClient(recipientClient.getUser().getGuuid())
             .BankAccountOrigin(origin.getIban())
             .BankAccountDestination(destination.getIban())

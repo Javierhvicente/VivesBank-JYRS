@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jyrs.dev.vivesbank.products.bankAccounts.dto.BankAccountRequest;
 import jyrs.dev.vivesbank.products.bankAccounts.dto.BankAccountResponse;
+import jyrs.dev.vivesbank.products.bankAccounts.dto.UpdateAccountRequest;
+import jyrs.dev.vivesbank.products.bankAccounts.dto.UpdateAccountResponse;
 import jyrs.dev.vivesbank.products.bankAccounts.services.BankAccountService;
 import jyrs.dev.vivesbank.users.models.User;
 import jyrs.dev.vivesbank.utils.pagination.PageResponse;
@@ -133,7 +135,7 @@ public class BankAccountController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos en la solicitud", content = @Content),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
-    @PostMapping("accounts")
+    @PostMapping
     public ResponseEntity<BankAccountResponse> create(
             @Parameter(description = "Usuario autenticado", hidden = true)
             @AuthenticationPrincipal User user,
@@ -180,7 +182,7 @@ public class BankAccountController {
         log.info("Obteniendo todas las cuentas del cliente: {}", user.getGuuid());
         return ResponseEntity.ok(accountService.getAllMeAccounts(user.getGuuid()));
     }
-
+    
     @Operation(
             summary = "Elimina una cuenta bancaria propia",
             description = "Permite a un usuario autenticado eliminar una de sus propias cuentas bancarias."

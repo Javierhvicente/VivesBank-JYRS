@@ -16,18 +16,10 @@ import java.util.List;
 @Repository
 public interface MovementsRepository extends MongoRepository<Movement, String> {
 
-    List<Movement> findBySenderClient_Id(String clientId);
+    List<Movement> findBySenderClient(String clientId);
 
-    List<Movement> findByRecipientClient_Id(String clientId);
+    List<Movement> findByRecipientClient(String clientId);
 
-    List<Movement> findByTypeMovement(String typeMovement);
-
-    List<Movement> findByBankAccountOrigin (String bankAccountOrigin);
-
-    List<Movement> findByBankAccountDestination (String bankAccountDestination);
-
-    List<Movement> findAll(String movementId);
-
-    List<Movement> findBySenderClient_IdOrRecipientClient_Id(String clientId, String clientId1);
+    List<Movement> findBySenderClientAndRecipientClient(String clientId, String clientId1);
 }
 

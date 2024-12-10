@@ -17,6 +17,7 @@ import jyrs.dev.vivesbank.users.clients.service.storage.ClientStorage;
 import jyrs.dev.vivesbank.users.clients.storage.service.StorageService;
 import jyrs.dev.vivesbank.users.models.Role;
 import jyrs.dev.vivesbank.users.models.User;
+import jyrs.dev.vivesbank.users.users.repositories.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class ClientsServiceImpl implements ClientsService {
 
     private final ClientsRepository repository;
+    private final UsersRepository usersRepository;
     private final StorageService storageService;
     private final ClientMapper mapper;
     private final ClientStorage storage;
@@ -44,8 +46,9 @@ public class ClientsServiceImpl implements ClientsService {
     private final RedisTemplate<String, Client> redisTemplate;
     @Autowired
 
-    public ClientsServiceImpl(ClientsRepository repository, RedisTemplate<String, Client> redisTemplate, StorageService storageService, ClientMapper mapper, ClientStorage storage, BankAccountService bankAccountService) {
+    public ClientsServiceImpl(ClientsRepository repository, UsersRepository usersRepository, RedisTemplate<String, Client> redisTemplate, StorageService storageService, ClientMapper mapper, ClientStorage storage, BankAccountService bankAccountService) {
         this.repository = repository;
+        this.usersRepository = usersRepository;
         this.storageService = storageService;
         this.mapper = mapper;
         this.storage = storage;
@@ -145,9 +148,16 @@ public class ClientsServiceImpl implements ClientsService {
         var roles = new HashSet<Role>(user.getRoles());
         roles.add(Role.CLIENT);
         user.setRoles(roles);
+        usersRepository.save(user);
         cliente.setUser(user);
 
+        cliente.setEmail(user.getUsername());
+        cliente.setCuentas(List.of());
+
         var clienteGuardado = repository.save(cliente);
+
+        log.error(clienteGuardado.getUser().getRoles().toString());
+        log.error(user.getRoles().toString());
 
         return mapper.toResponse(clienteGuardado);
     }
@@ -178,7 +188,7 @@ public class ClientsServiceImpl implements ClientsService {
     public ClientResponse updateMeDni(String id, MultipartFile fotoDni) {
         var cliente = repository.getByUser_Guuid(id).orElseThrow(() -> new ClientNotFound(id.toString()));
         String fotoVieja = cliente.getFotoDni();
-        var email = cliente.getEmail();
+        var email = cliente.getUser().getUsername();
         var tipo = "DNI-" + email;
         String imageStored = storageService.store(fotoDni, tipo);
         storageService.delete(fotoVieja);

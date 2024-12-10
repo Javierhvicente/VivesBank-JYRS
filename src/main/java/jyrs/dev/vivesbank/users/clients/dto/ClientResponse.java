@@ -36,4 +36,6 @@ public class ClientResponse {
 
     private List<BankAccountResponse> cuentas;
 
+    private String token;
+
 }

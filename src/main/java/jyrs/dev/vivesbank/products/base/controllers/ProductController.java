@@ -16,9 +16,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @RestController
@@ -75,6 +82,16 @@ public class ProductController {
         var result = productServices.save(productDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
+
+    @PostMapping(value = "/csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> loadProdut(@RequestPart("file") MultipartFile file) throws IOException {
+        log.info("Importando productos: " + file.getOriginalFilename());
+        Path path = Paths.get(System.getProperty("java.io.tmpdir"), file.getOriginalFilename());
+        Files.write(path, file.getBytes());
+        productServices.loadCsv(path.toFile());
+        return ResponseEntity.noContent().build();
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody ProductUpdatedDto updatedProduct){

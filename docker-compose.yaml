@@ -13,6 +13,12 @@ services:
     volumes:
       - ./database/movements.js:/docker-entrypoint-initdb.d/movements.js:ro
 
-
-
+  redis:
+    container_name: redis-server
+    image: redis:7.0
+    restart: always
+    environment:
+      - REDIS_PASSWORD=JYRS123
+    ports:
+      - "6379:6379"
 

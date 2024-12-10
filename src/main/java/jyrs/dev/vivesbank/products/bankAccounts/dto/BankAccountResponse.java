@@ -66,4 +66,8 @@ public class BankAccountResponse {
         this.creditCard = creditCard;
         this.clientId = clientId;
     }
+
+    public Long getId() {
+        return 1L;
+    }
 }
