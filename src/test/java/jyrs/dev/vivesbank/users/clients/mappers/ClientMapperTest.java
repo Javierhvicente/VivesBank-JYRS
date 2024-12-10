@@ -1,5 +1,6 @@
 package jyrs.dev.vivesbank.users.clients.mappers;
 
+import jyrs.dev.vivesbank.auth.jwt.JwtService;
 import jyrs.dev.vivesbank.products.bankAccounts.mappers.BankAccountMapper;
 import jyrs.dev.vivesbank.users.clients.dto.AddressDto;
 import jyrs.dev.vivesbank.users.clients.dto.ClientRequestCreate;
@@ -33,13 +34,15 @@ class ClientMapperTest {
     private AddressDto addressDto;
     @Mock
     private BankAccountMapper accountMapper;
+    @Mock
+    private JwtService service;
 
     @InjectMocks
     private ClientMapper mapper;
 
     @BeforeEach
     void setUp() {
-        mapper = new ClientMapper(accountMapper);
+        mapper = new ClientMapper(accountMapper,service);
 
         addressDto = AddressDto.builder()
                 .calle("TEST")

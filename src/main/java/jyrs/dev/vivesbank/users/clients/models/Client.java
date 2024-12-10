@@ -44,6 +44,7 @@ public class Client {
     @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]{2,50}$", message = "El nombre debe contener solo letras y espacios (2-50 caracteres)")
     private String nombre;
 
+    @Embedded
     private Address direccion;
 
     @Column(nullable = false)

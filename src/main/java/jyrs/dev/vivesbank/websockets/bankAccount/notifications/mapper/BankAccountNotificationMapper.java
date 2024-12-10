@@ -24,7 +24,7 @@ public class BankAccountNotificationMapper {
         }
 
         return new BankAccountNotificationResponse(
-                account.getId(),
+                1L,
                 account.getIban(),
                 account.getAccountType().toString(),
                 account.getBalance(),

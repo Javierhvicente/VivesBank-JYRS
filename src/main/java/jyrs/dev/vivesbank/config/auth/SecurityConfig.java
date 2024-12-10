@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .sessionManagement(manager ->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->request.requestMatchers("/error/**").permitAll())
                 .authorizeHttpRequests(request -> request.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll())
-                .authorizeHttpRequests(request -> request.requestMatchers(apipath + apiVersion + "/auth/**").permitAll())
+                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST,apipath + apiVersion + "/auth/**").permitAll())
                 .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.GET,apipath + apiVersion + "/users" ).hasRole("ADMIN"))
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.GET,apipath + apiVersion + "/users/me/profile").hasAnyRole("USER", "ADMIN"))
                 .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.GET, apipath + apiVersion + "/users/{id}").hasRole("ADMIN"))
@@ -96,7 +96,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.GET, "/vivesbank" + apiVersion + "/movements").hasRole("CLIENT")) // GET ALL MOVEMENTS
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.GET, "/vivesbank" + apiVersion + "/movements/client/{clientId}").hasRole( "ADMIN")) // GET MOVEMENTS BY CLIENT ID
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.GET, "/vivesbank" + apiVersion + "/movements/tipo/{typeMovement}").hasRole("ADMIN")) // GET MOVEMENTS BY TYPE MOVEMENT
-                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, "/vivesbank" + apiVersion + "/movements").hasRole("ADMIN")) // CREATE MOVEMENT
+                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, "/vivesbank" + apiVersion + "/movements").hasRole("CLIENT")) // CREATE MOVEMENT
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, "/vivesbank" + apiVersion + "/movements/{id}/reverse").hasRole("CLIENT")) // Reverse movement
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.DELETE, "/vivesbank" + apiVersion + "/movements/{id}").hasRole("CLIENT")) // DELETE MOVEMENT BY ID
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.GET, "/vivesbank" + apiVersion + "/movements/pdf").hasRole("ADMIN")) // GET ALL MOVEMENTS
@@ -147,6 +147,7 @@ public class SecurityConfig {
 
                 //Base Product
                 .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.GET,"/vivesbank" + apiVersion +"/products").permitAll())
+                .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.POST,"/vivesbank" + apiVersion +"/products/csv").hasRole("ADMIN"))
                 .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.GET,"/vivesbank" + apiVersion +"/products/id/{id}").permitAll())
                 .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.GET,"/vivesbank" + apiVersion +"/products/type/{type}").permitAll())
                 .authorizeHttpRequests(request ->request.requestMatchers(HttpMethod.POST,"/vivesbank" + apiVersion +"/products").hasAnyRole("ADMIN"))

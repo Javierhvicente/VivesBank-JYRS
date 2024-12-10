@@ -3,6 +3,7 @@ package jyrs.dev.vivesbank.users.admins.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jyrs.dev.vivesbank.VivesBankApplication;
 import jyrs.dev.vivesbank.users.admins.dto.AdminRequestDto;
 import jyrs.dev.vivesbank.users.admins.dto.AdminResponseDto;
 import jyrs.dev.vivesbank.users.admins.dto.AdminUpdateRequest;
@@ -38,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@SpringBootTest
+@SpringBootTest(classes = VivesBankApplication.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})

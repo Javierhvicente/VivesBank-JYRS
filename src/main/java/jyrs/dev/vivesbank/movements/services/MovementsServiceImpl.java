@@ -38,20 +38,18 @@ public class MovementsServiceImpl implements MovementsService {
     private final MovementsStorage storage;
     private final BankAccountRepository bankAccountRepository;
     private final MovementMapper movementMapper;
-    private final UsersRepository usersRepository;
-    private final MovementsService movementsService;
 
     @Autowired
-    public MovementsServiceImpl(MovementsRepository movementsRepository, ClientsRepository clientsRepository, MovementPdfGenerator pdfGenerator, MovementsStorage storage, RedisTemplate<String, Movement> redisTemplate, BankAccountRepository bankAccountRepository, MovementMapper movementMapper, UsersRepository usersRepository, @Qualifier("movementsService") MovementsService movementsService) {
+    public MovementsServiceImpl(MovementsRepository movementsRepository, ClientsRepository clientsRepository, MovementPdfGenerator pdfGenerator, MovementsStorage storage, BankAccountRepository bankAccountRepository, MovementMapper movementMapper) {
         this.movementsRepository = movementsRepository;
         this.clientsRepository = clientsRepository;
         this.pdfGenerator = pdfGenerator;
         this.storage = storage;
         this.bankAccountRepository = bankAccountRepository;
         this.movementMapper = movementMapper;
-        this.usersRepository = usersRepository;
-        this.movementsService = movementsService;
+
     }
+
 
     @Override
     public MovementResponse createMovement(String senderClientId, MovementRequest movementRequest) {
@@ -59,14 +57,15 @@ public class MovementsServiceImpl implements MovementsService {
         var accountsSender = client.getCuentas();
         var accountOrigin = bankAccountRepository.findByIban(movementRequest.getBankAccountOrigin().trim()).orElseThrow(()-> new BankAccountNotFoundByIban(movementRequest.getBankAccountOrigin()));
         
-        if (!accountsSender.contains(accountOrigin)) {
+        if (accountOrigin.getClient().getDni() != client.getDni()) {
             throw new MovementNotAccountClient("Esta cuenta: " + accountOrigin  +  " no pertenece a este cliente. " + client);
         }
+
         
         var accountRecipient = bankAccountRepository.findByIban(movementRequest.getBankAccountDestination().trim()).orElseThrow(()-> new BankAccountNotFoundByIban(movementRequest.getBankAccountDestination()));
         var clientRecipient = accountRecipient.getClient();
         
-        if (!clientRecipient.getCuentas().contains(accountRecipient)) {
+        if (accountRecipient.getClient().getDni() != clientRecipient.getDni()) {
             throw new MovementNotAccountClient("Esta cuenta: " + accountRecipient + " no pertenece a este cliente. " + clientRecipient);
         }
         
@@ -115,8 +114,8 @@ public class MovementsServiceImpl implements MovementsService {
         List<Movement> movements = List.of();
         List<MovementResponse> movementResponses = List.of();
 
-        List<Movement> sentMovements = movementsRepository.findBySenderClient_Id((clientId));
-        List<Movement> receivedMovements = movementsRepository.findByRecipientClient_Id((clientId));
+        List<Movement> sentMovements = movementsRepository.findBySenderClient((clientId));
+        List<Movement> receivedMovements = movementsRepository.findByRecipientClient((clientId));
 
         movements.addAll(sentMovements);
         movements.addAll(receivedMovements);
@@ -150,7 +149,7 @@ public class MovementsServiceImpl implements MovementsService {
         List<Movement> movements = List.of();
         List<MovementResponse> movementResponses = List.of();
 
-        List<Movement> sentMovements = movementsRepository.findBySenderClient_Id((clientId));
+        List<Movement> sentMovements = movementsRepository.findBySenderClient((clientId));
 
         movements.addAll(sentMovements);
 
@@ -168,7 +167,7 @@ public class MovementsServiceImpl implements MovementsService {
         List<Movement> movements = List.of();
         List<MovementResponse> movementResponses = List.of();
 
-        List<Movement> recipientMovements = movementsRepository.findByRecipientClient_Id((clientId));
+        List<Movement> recipientMovements = movementsRepository.findByRecipientClient((clientId));
 
         movements.addAll(recipientMovements);
 
@@ -184,7 +183,7 @@ public class MovementsServiceImpl implements MovementsService {
     public List<MovementResponse> getMovementsByType(String typeMovement, String clientId) {
         var client = clientsRepository.getByUser_Guuid(clientId).orElseThrow(() -> new ClientNotFound(clientId));
 
-        List<Movement> allClientMovements = movementsRepository.findBySenderClient_IdOrRecipientClient_Id(clientId, clientId);
+        List<Movement> allClientMovements = movementsRepository.findBySenderClientAndRecipientClient(clientId, clientId);
 
         List<Movement> filteredMovements = allClientMovements.stream()
                 .filter(mov -> mov.getTypeMovement().equalsIgnoreCase(typeMovement))
@@ -270,8 +269,8 @@ public class MovementsServiceImpl implements MovementsService {
 
         List<Movement> lista = List.of();
 
-        List<Movement> sentMovements = movementsRepository.findBySenderClient_Id((id));
-        List<Movement> receivedMovements = movementsRepository.findByRecipientClient_Id((id));
+        List<Movement> sentMovements = movementsRepository.findBySenderClient((id));
+        List<Movement> receivedMovements = movementsRepository.findByRecipientClient((id));
 
         lista.addAll(sentMovements);
         lista.addAll(receivedMovements);
@@ -284,7 +283,7 @@ public class MovementsServiceImpl implements MovementsService {
 
         var cliente = clientsRepository.getByUser_Guuid(id).orElseThrow(() -> new ClientNotFound(id));
 
-        var lista = movementsRepository.findBySenderClient_Id(cliente.getUser().getGuuid());
+        var lista = movementsRepository.findBySenderClient(cliente.getUser().getGuuid());
 
         return pdfGenerator.generateMovementsPdf(lista, Optional.of(cliente));
     }
@@ -294,7 +293,7 @@ public class MovementsServiceImpl implements MovementsService {
 
         var cliente = clientsRepository.getByUser_Guuid(id).orElseThrow(() -> new ClientNotFound(id));
 
-        var lista = movementsRepository.findByRecipientClient_Id(cliente.getUser().getGuuid());
+        var lista = movementsRepository.findByRecipientClient(cliente.getUser().getGuuid());
 
         return pdfGenerator.generateMovementsPdf(lista, Optional.of(cliente));
     }

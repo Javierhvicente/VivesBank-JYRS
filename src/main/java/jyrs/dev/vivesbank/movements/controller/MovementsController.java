@@ -3,6 +3,10 @@ package jyrs.dev.vivesbank.movements.controller;
 import jyrs.dev.vivesbank.movements.dto.MovementRequest;
 import jyrs.dev.vivesbank.movements.dto.MovementResponse;
 import jyrs.dev.vivesbank.movements.services.MovementsService;
+import jyrs.dev.vivesbank.products.bankAccounts.dto.UpdateAccountRequest;
+import jyrs.dev.vivesbank.products.bankAccounts.dto.UpdateAccountResponse;
+import jyrs.dev.vivesbank.products.bankAccounts.models.BankAccount;
+import jyrs.dev.vivesbank.products.bankAccounts.services.BankAccountService;
 import jyrs.dev.vivesbank.users.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -25,14 +29,16 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/v1/movements")
+@RequestMapping("/vivesbank/v1/movements")
 @Slf4j
 public class MovementsController {
 
     private final MovementsService movementsService;
+    private final BankAccountService service;
 
-    public MovementsController(MovementsService movementsService) {
+    public MovementsController(MovementsService movementsService, BankAccountService service) {
         this.movementsService = movementsService;
+        this.service = service;
     }
 
     /**
@@ -45,6 +51,14 @@ public class MovementsController {
     @PostMapping
     public ResponseEntity<MovementResponse> createMovement(@AuthenticationPrincipal User user, @RequestBody MovementRequest movementRequest) {
         var movementResponse = movementsService.createMovement(user.getGuuid(), movementRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(movementResponse);
+    }
+
+    @PostMapping("/me/{iban}")
+    public ResponseEntity<UpdateAccountResponse> ingreso(@AuthenticationPrincipal User user, @RequestBody UpdateAccountRequest movementRequest, @PathVariable String iban) {
+        var movementResponse = service.updateAccountResponse(user.getGuuid(), movementRequest,iban);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(movementResponse);
