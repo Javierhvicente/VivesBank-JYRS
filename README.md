@@ -61,6 +61,6 @@ Este proyecto consiste en desarrollar una aplicación en *Java* con springBoot. 
 - Caché en REDIS.  
 - Autenticación y autorización con JWT.  
 
-
-
+### Video:
+https://youtu.be/6YqSGCGpu_w
 
